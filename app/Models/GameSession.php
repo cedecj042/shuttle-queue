@@ -26,4 +26,9 @@ class GameSession extends Model
     {
         return $this->hasMany(Player::class);
     }
+
+    public function courts()
+    {
+        return $this->hasMany(Court::class);
+    }
 }

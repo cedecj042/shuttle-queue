@@ -26,6 +26,7 @@ class GameSessionResource extends JsonResource
             'updated_at' => Carbon::parse($this->updated_at)->format('Y-m-d H:i:s'),
             'matches' => GameMatchResource::collection($this->whenLoaded('matches')),
             'players' => PlayerResource::collection($this->whenLoaded('players')),
+            'courts' => CourtResource::collection($this->whenLoaded('courts')),
         ];
     }
 }

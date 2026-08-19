@@ -1,4 +1,5 @@
 import { Link } from "@inertiajs/react"
+import StatusBadge from "@/Components/StatusBadge"
 
 export interface SessionCardData {
     id: number
@@ -13,27 +14,6 @@ interface SessionCardProps {
     session: SessionCardData
     onEdit?: (session: SessionCardData) => void
     onDelete?: (session: SessionCardData) => void
-}
-
-const STATUS_STYLES: Record<string, { label: string; color: string }> = {
-    completed: { label: "Completed", color: "#91C579" },
-    active: { label: "In Progress", color: "#3B82F6" },
-    ongoing: { label: "In Progress", color: "#3B82F6" },
-    inactive: { label: "Pending", color: "#D9A441" },
-    cancelled: { label: "Cancelled", color: "#E5484D" },
-}
-
-function StatusBadge({ status }: { status: string }) {
-    const style = STATUS_STYLES[status] ?? { label: status, color: "#9CA3AF" }
-
-    return (
-        <span
-            className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium"
-            style={{ backgroundColor: `${style.color}0A`, color: style.color }}
-        >
-            {style.label}
-        </span>
-    )
 }
 
 export default function SessionCard({ session, onEdit, onDelete }: SessionCardProps) {

@@ -17,12 +17,15 @@ class GameMatchResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'match_id' => $this->match_id,
+            'game_session_id' => $this->game_session_id,
             'court_id' => $this->court_id,
-            'session_id' => $this->session_id,
+            'match_status' => $this->match_status,
+            'team1_score' => $this->team1_score,
+            'team2_score' => $this->team2_score,
+            'winner_team' => $this->winner_team,
             'created_at' => Carbon::parse($this->created_at)->format('Y-m-d H:i:s'),
             'updated_at' => Carbon::parse($this->updated_at)->format('Y-m-d H:i:s'),
-            'session' => new GameSessionResource($this->whenLoaded('session')),
+            'game_session' => new GameSessionResource($this->whenLoaded('gameSession')),
             'court' => new CourtResource($this->whenLoaded('court')),
         ];
     }
