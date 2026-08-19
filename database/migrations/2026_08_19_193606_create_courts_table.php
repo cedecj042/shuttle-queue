@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('courts', function (Blueprint $table) {
             $table->id('court_id');
+            $table->foreignId('session_id')->constrained('sessions');
             $table->integer('court_number')->unique();
             $table->timestamps();
         });
