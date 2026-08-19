@@ -9,6 +9,7 @@ class Player extends Model
     protected $fillable = [
         'player_id',
         'player_name',
+        'gender',
         'player_skill',
         'status',
         'idle_time',

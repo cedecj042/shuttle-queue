@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('players', function (Blueprint $table) {
             $table->id();
             $table->string('player_name');
+            $table->enum('gender',['male','female']);
             $table->enum('player_skill',['beginner','intermediate-low','intermediate-high','advanced']);
             $table->enum('status',['active','inactive'])->default('inactive');
             $table->timestamp('idle_time')->nullable();
