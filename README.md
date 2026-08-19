@@ -1,59 +1,77 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Shuttle Queue
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A badminton session manager: organize a night of play into **sessions**, assign **courts**, run **matches**, and track which **players** are on/off court. Built with Laravel, Inertia.js, and React.
 
-## About Laravel
+## Why this exists
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Running open-play badminton by hand means juggling a whiteboard: who's playing, who's next, which court is free, who's been idle too long. Shuttle Queue models that whiteboard as data so the rotation logic (eventually: auto-queueing idle players, balancing skill levels, tracking scores) can be built on top of a clean schema instead of re-derived from memory every session.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Tech stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Laravel 12** (PHP 8.2) — backend, routing, persistence
+- **Inertia.js + React 18 + TypeScript** — server-driven SPA pages without a separate API layer
+- **Tailwind CSS** — styling
+- **MySQL** — database (via `DB_CONNECTION` in `.env`)
+- **Pest** — testing
 
-## Learning Laravel
+## Data model
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+```
+GameSession (a night of play: name, date, status)
+ ├─ Court        (numbered courts available for that session)
+ ├─ Player       (roster for that session: name, gender, skill, status)
+ └─ GameMatch    (a match on a court within the session)
+      └─ game_match_players (pivot: which players, which team/slot)
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Design choices worth calling out:
 
-## Laravel Sponsors
+- **Everything scopes to a `GameSession`.** Courts, players, and matches all belong to a session rather than existing globally. A player list and court count are specific to one night's play, so scoping them avoids leaking state between sessions.
+- **Statuses are PHP enums (`app/Enum/*`), backed by DB `enum` columns.** `GameSessionStatus`, `MatchStatus`, and `Gender` give a single source of truth for valid values on both the PHP and schema side, instead of scattering string literals across controllers and migrations.
+- **`GameMatch` ↔ `Player` is many-to-many** through `game_match_players`, carrying `team_number` and `player_number` on the pivot. A match needs to know not just *who* played but *which team and slot* — pivot columns let the schema express that without a separate join model.
+- **API Resources (`app/Http/Resources/*`) shape every response.** Timestamps are formatted consistently (`Y-m-d H:i:s`), relations are only included via `whenLoaded()`/`whenCounted()` so list views (e.g. the session index, which only needs a player *count*) don't pay for eager-loading data they don't render.
+- **Inertia instead of a JSON API + SPA split.** Pages are React components that receive props directly from Laravel controllers (`Inertia::render(...)`), so there's one round trip and one source of truth for auth/session state, with no separate API client or token handling to maintain for what is currently a single-app frontend.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Prerequisites
 
-### Premium Partners
+- PHP 8.2+, Composer
+- Node.js + npm
+- MySQL (or adjust `DB_*` in `.env` for another driver)
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Setup
 
-## Contributing
+```bash
+composer install
+npm install
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+cp .env.example .env
+php artisan key:generate
+```
 
-## Code of Conduct
+Set `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` in `.env` to a MySQL database you've created, then:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+php artisan migrate:fresh --seed
+```
 
-## Security Vulnerabilities
+The seeder (`GameSessionSeeder`) creates 2 sessions, each with 2 courts, 8 players, and one in-progress match per court — enough to see the UI populated without manually creating data.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Running it
 
-## License
+```bash
+composer dev
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This runs the PHP dev server, queue listener, log viewer (Pail), and Vite dev server together (via `concurrently`). Visit `http://localhost:8000`.
+
+To run pieces individually instead:
+
+```bash
+php artisan serve       # backend
+npm run dev             # Vite/React with HMR
+```
+
+
+## Current state
+
+Session CRUD (list, create, edit, delete) is wired up end-to-end on `GameSessions/Index`. The session detail page (`GameSessions/Show`) receives full session data — matches (with court), players, and courts — but court/match/player management UI is still to be built on top of it and its just read only as of now.
