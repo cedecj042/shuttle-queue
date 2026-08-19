@@ -18,6 +18,7 @@ class PlayerResource extends JsonResource
         return [
             'id' => $this->id,
             'player_name' => $this->player_name,
+            'game_session_id' => $this->game_session_id,
             'gender' => $this->gender,
             'player_skill' => $this->player_skill,
             'status' => $this->status,
@@ -25,9 +26,7 @@ class PlayerResource extends JsonResource
             'created_at' => Carbon::parse($this->created_at)->format('Y-m-d H:i:s'),
             'updated_at' => Carbon::parse($this->updated_at)->format('Y-m-d H:i:s'),
             'matches' => GameMatchResource::collection($this->whenLoaded('matches')),
-            'sessions' => SessionResource::collection($this->whenLoaded('sessions')),
-            'match_count' => $this->matches()->count(),
-            'session_count' => $this->sessions()->count(),
+            'game_session' => new GameSessionResource($this->whenLoaded('gameSession')),
         ];
     }
 }

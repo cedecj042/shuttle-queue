@@ -30,7 +30,7 @@ class GameSessionController extends Controller
 
     public function show(GameSession $session){
         
-        $session->load(['matches','players']);
+        $session->load(['matches.court', 'players', 'courts']);
 
         return Inertia::render('GameSessions/Show', [
             'session' => GameSessionResource::make($session)
