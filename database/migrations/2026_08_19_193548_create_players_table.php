@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('players', function (Blueprint $table) {
-            $table->id('player_id');
+            $table->id();
             $table->string('player_name');
             $table->enum('player_skill',['beginner','intermediate-low','intermediate-high','advanced']);
             $table->enum('status',['active','inactive'])->default('inactive');

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('game_matches', function (Blueprint $table) {
-            $table->id('game_match_id');
+            $table->id();
             $table->foreignId('session_id')->constrained('sessions');
             $table->foreignId('court_id')->constrained('courts');
             $table->enum('match_status',['active','completed','ongoing','cancelled','idle'])->default('idle');

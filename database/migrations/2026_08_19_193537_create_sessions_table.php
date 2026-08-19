@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('sessions', function (Blueprint $table) {
-            $table->id('session_id');
+            $table->id();
             $table->string('session_name');
             $table->enum('status',['active','completed','ongoing','cancelled','inactive'])->default('inactive');
             $table->dateTime('session_date');
