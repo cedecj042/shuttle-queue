@@ -10,23 +10,22 @@ use Inertia\Inertia;
 class GameSessionController extends Controller
 {
     public function index(){
-        $sessions = GameSession::withCount('players')->get();
+        $sessions = GameSession::orderBy('session_date')->latest()->withCount('players')->get();
 
         return Inertia::render('GameSessions/Index', [
-            'sessions' => $sessions
+            'sessions' => GameSessionResource::collection($sessions)
         ]);
     }
 
     public function store(Request $request){
         $validated = $request->validate([
             'session_name' => 'required|string|max:255',
-            'status' => 'required|string|in:active,inactive',
             'session_date' => 'required|date',
         ]);
 
         GameSession::create($validated);
 
-        return redirect()->route('sessions.index')->with('success', 'Game session created successfully.');
+        return redirect()->route('session.index')->with('success', 'Game session created successfully.');
     }
 
     public function show(GameSession $session){
@@ -41,7 +40,6 @@ class GameSessionController extends Controller
     public function update(Request $request, GameSession $session){
         $validated = $request->validate([
             'session_name' => 'required|string|max:255',
-            'status' => 'required|string|in:active,inactive',
             'session_date' => 'required|date',
         ]);
 
@@ -53,6 +51,6 @@ class GameSessionController extends Controller
     public function destroy(GameSession $session){
         $session->delete();
 
-        return redirect()->route('sessions.index')->with('success', 'Game session deleted successfully.');
+        return redirect()->route('session.index')->with('success', 'Game session deleted successfully.');
     }
 }

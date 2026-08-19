@@ -17,13 +17,15 @@ class GameSessionResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'session_id' => $this->session_id,
             'session_name' => $this->session_name,
-            'start_time' => Carbon::parse($this->start_time)->format('Y-m-d H:i:s'),
-            'end_time' => Carbon::parse($this->end_time)->format('Y-m-d H:i:s'),
+            'status' => $this->status,
+            'session_date' => Carbon::parse($this->session_date)->format('F j, Y'),
+            'session_date_raw' => Carbon::parse($this->session_date)->format('Y-m-d'),
+            'players_count' => $this->whenCounted('players'),
             'created_at' => Carbon::parse($this->created_at)->format('Y-m-d H:i:s'),
             'updated_at' => Carbon::parse($this->updated_at)->format('Y-m-d H:i:s'),
-            'matches' => GameMatchResource::collection($this->matches),
+            'matches' => GameMatchResource::collection($this->whenLoaded('matches')),
+            'players' => PlayerResource::collection($this->whenLoaded('players')),
         ];
     }
 }
