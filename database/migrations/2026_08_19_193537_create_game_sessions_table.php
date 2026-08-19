@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sessions', function (Blueprint $table) {
+        Schema::create('game_sessions', function (Blueprint $table) {
             $table->id();
             $table->string('session_name');
             $table->enum('status',['active','completed','ongoing','cancelled','inactive'])->default('inactive');

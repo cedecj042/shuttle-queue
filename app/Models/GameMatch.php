@@ -15,9 +15,9 @@ class GameMatch extends Model
         'updated_at',
     ];
 
-    public function session()
+    public function gameSession()
     {
-        return $this->belongsTo(Session::class);
+        return $this->belongsTo(GameSession::class);
     }
 
     public function court()
@@ -27,7 +27,13 @@ class GameMatch extends Model
 
     public function players()
     {
-        return $this->belongsToMany(Player::class, 'game_match_players', 'match_id', 'player_id')
-            ->withPivot('team_number', 'player_number');
+        return $this->belongsToMany(
+            Player::class,
+            'game_match_player',
+            'game_match_id',
+            'player_id'
+        )
+        ->withPivot(['team_number','player_number',])
+        ->withTimestamps();
     }
 }

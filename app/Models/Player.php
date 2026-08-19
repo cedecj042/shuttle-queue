@@ -9,6 +9,7 @@ class Player extends Model
     protected $fillable = [
         'player_id',
         'player_name',
+        'game_session_id',
         'gender',
         'player_skill',
         'status',
@@ -16,6 +17,11 @@ class Player extends Model
         'created_at',
         'updated_at',
     ];
+
+    public function gameSession()
+    {
+        return $this->belongsTo(GameSession::class);
+    }
 
     public function matches()
     {

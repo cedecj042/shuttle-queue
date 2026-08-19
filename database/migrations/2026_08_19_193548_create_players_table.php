@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('players', function (Blueprint $table) {
             $table->id();
+            $table->foreign('game_session_id')->constrained('game_sessions');
             $table->string('player_name');
             $table->enum('gender',['male','female']);
             $table->enum('player_skill',['beginner','intermediate-low','intermediate-high','advanced']);

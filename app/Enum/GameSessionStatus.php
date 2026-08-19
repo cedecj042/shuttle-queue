@@ -2,7 +2,7 @@
 
 namespace App\Enum;
 
-enum SessionStatus: string
+enum GameSessionStatus: string
 {
     case Active = 'active';
     case Completed = 'completed';

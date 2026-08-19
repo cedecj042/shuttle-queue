@@ -9,7 +9,7 @@ class Court extends Model
     protected $fillable = [
         'court_id',
         'court_number',
-        'session_id',
+        'game_session_id',
         'created_at',
         'updated_at',
     ];
@@ -17,5 +17,10 @@ class Court extends Model
     public function matches()
     {
         return $this->hasMany(GameMatch::class);
+    }
+
+    public function gameSession()
+    {
+        return $this->belongsTo(GameSession::class);
     }
 }

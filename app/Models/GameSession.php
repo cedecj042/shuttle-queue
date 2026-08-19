@@ -4,10 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Session extends Model
+class GameSession extends Model
 {
     protected $fillable = [
-        'session_id',
         'session_name',
         'status',
         'session_date',

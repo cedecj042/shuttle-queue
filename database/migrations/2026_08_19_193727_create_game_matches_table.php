@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('game_matches', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('session_id')->constrained('sessions');
+            $table->foreignId('game_session_id')->constrained('game_sessions');
             $table->foreignId('court_id')->constrained('courts');
             $table->enum('match_status',['active','completed','ongoing','cancelled','idle'])->default('idle');
             $table->integer('team1_score')->default(0);
