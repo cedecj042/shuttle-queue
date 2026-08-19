@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('game_match_players', function (Blueprint $table) {
             $table->id();
-            $table->foreign('match_id')->constrained('game_matches');
-            $table->foreign('player_id')->constrained('players');
+            $table->foreignId('match_id')->constrained('game_matches');
+            $table->foreignId('player_id')->constrained('players');
             $table->integer('team_number');
             $table->integer('player_number');
             $table->timestamps();
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('match_players');
+        Schema::dropIfExists('game_match_players');
     }
 };
